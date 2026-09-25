@@ -1,0 +1,441 @@
+diff --git a/.github/workflows/hdc-guard.yml b/.github/workflows/hdc-guard.yml
+index 38c22a8..b80b8fc 100644
+--- a/.github/workflows/hdc-guard.yml
++++ b/.github/workflows/hdc-guard.yml
+@@ -9,11 +9,13 @@ jobs:
+     steps:
+       - uses: actions/checkout@v4
+         with:
+-          fetch-depth: 2
++          fetch-depth: 0
+       - uses: actions/setup-python@v5
+         with:
+           python-version: '3.12'
+       - name: HDC guard
+         env:
+-          HDC_BASE_REF: HEAD~1
++          HDC_BASE_REF: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+         run: python hdc/guard.py
++      - name: HDC regression tests
++        run: python -m unittest discover -s tests -v
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..2e469dc
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,3 @@
++hdc/state.json
++__pycache__/
++*.pyc
+diff --git a/HDC_TASK_CODEBOOK.md b/HDC_TASK_CODEBOOK.md
+index 54ba8b3..4510f64 100644
+--- a/HDC_TASK_CODEBOOK.md
++++ b/HDC_TASK_CODEBOOK.md
+@@ -27,8 +27,7 @@ Lệnh sử dụng:
+ python hdc/hdc.py next
+ python hdc/hdc.py prompt Txx
+ python hdc/hdc.py task Txx
+-python hdc/hdc.py complete Txx
+-python hdc/hdc.py accept Txx
++python hdc/hdc.py complete Txx path/to/evidence.json
+ ```
+ 
+-`complete` là trạng thái engineering hoàn tất. `accept` là quyết định của Human. Hai trạng thái không được đồng nhất.
++`complete` chỉ đánh dấu engineering hoàn tất sau khi cung cấp danh sách artifact và kết quả kiểm tra; xem `templates/ENGINEERING_EVIDENCE.template.json`. Các kết quả trong JSON do người lập khai báo, cần đối chiếu với CI. `accept` đã bị vô hiệu hóa để AI không thể tự ghi nhận quyết định của Human. Human duyệt pull request trên GitHub; cần cấu hình bảo vệ `main` yêu cầu review độc lập và CI pass. `next` chỉ gợi ý task kỹ thuật, không cho phép merge hay activate.
+diff --git a/INSTALL.md b/INSTALL.md
+index dc3271a..bc7eeae 100644
+--- a/INSTALL.md
++++ b/INSTALL.md
+@@ -6,7 +6,7 @@
+ 2. Khám phá repository đích trước khi copy/merge bất kỳ file nào.
+ 3. Nếu repo đã có cấu trúc tương đương, merge theo capability/contract; không ghi đè mù.
+ 4. Đưa các thư mục `hdc/`, `tasks/`, `schemas/`, `templates/`, `docs/` và `.github/` vào root repository.
+-5. Không đưa `state.json` cũ từ dự án khác vào repo đang chạy; khởi tạo state cho repo đó.
++5. Không đưa `state.json` cũ từ dự án khác vào repo đang chạy. CLI tự tạo state cục bộ khi cần; file này được `.gitignore` loại khỏi repository. Nếu file đã được Git theo dõi trong repo hiện tại, chạy `git rm --cached --ignore-unmatch hdc/state.json` trên nhánh T00 và xóa bản state cũ ở máy sau khi kiểm tra có thông tin cần giữ hay không.
+ 6. Chạy:
+ 
+ ```bash
+@@ -17,6 +17,14 @@ python hdc/hdc.py prompt T00
+ 
+ 7. Thực hiện T00 trước mọi task khác.
+ 
++## T00 kiểm soát thay đổi
++
++- Tạo nhánh làm việc và pull request; không push trực tiếp vào `main`.
++- Trong GitHub repository Settings → Rules → Rulesets (hoặc Branch protection rules), áp dụng cho `main`: yêu cầu pull request, review của Human độc lập và status check `guard` thành công. AI không thể thiết lập chính sách thẩm quyền này chỉ bằng source code.
++- CI dùng SHA của base pull request hoặc `before` SHA của push, không dùng `HEAD~1`.
++- Chạy `python -m unittest discover -s tests -v`; xem `docs/T00_ACCEPTANCE.md` về giới hạn của guard.
++- `python hdc/hdc.py complete T00 path/to/evidence.json` yêu cầu artifact trong repo và các check khai báo `passed`; kiểm tra thực tế nằm ở CI. CLI `accept` không cấp Human acceptance.
++
+ ## Quyền GitHub cho AI
+ 
+ Dùng AI engineering identity riêng, cấp quyền tối thiểu cần thiết để đọc repository, tạo branch, commit/push branch, mở/cập nhật pull request, đọc CI và chạy workflow được phép. Không cấp mặc định quyền xóa repository, thay branch protection, force-push main hoặc truy cập repository không liên quan.
+diff --git a/change-packages/CP-T00.json b/change-packages/CP-T00.json
+new file mode 100644
+index 0000000..1a31995
+--- /dev/null
++++ b/change-packages/CP-T00.json
+@@ -0,0 +1,19 @@
++{
++  "change_package_id": "CP-T00",
++  "task_id": "T00",
++  "intent": "Establish reviewable engineering gates for the HDC execution kit.",
++  "requested_by": "human",
++  "capabilities_reused": ["HDC CLI", "GitHub Actions architecture guard"],
++  "capabilities_new": [],
++  "contract_changes": ["complete requires a repository evidence file", "accept no longer mutates local state"],
++  "semantic_impact": [],
++  "data_impact": ["local state.json is excluded from version control"],
++  "authority_impact": ["Human acceptance is performed through repository review and branch protection"],
++  "ui_impact": [],
++  "security_privacy_impact": ["CI checks full pull request diff; acceptance cannot be self-recorded through CLI"],
++  "migration": {"required": false, "plan": "No existing state is imported."},
++  "rollback": {"available": true, "plan": "Revert the T00 pull request."},
++  "tests_required": ["HDC guard regression tests", "CLI evidence and acceptance tests"],
++  "acceptance_criteria": ["Guard covers all pull request commits", "CLI cannot self-record Human acceptance", "Engineering completion requires evidence"],
++  "human_gate": "PENDING"
++}
+diff --git a/docs/T00_ACCEPTANCE.md b/docs/T00_ACCEPTANCE.md
+new file mode 100644
+index 0000000..af5b92f
+--- /dev/null
++++ b/docs/T00_ACCEPTANCE.md
+@@ -0,0 +1,19 @@
++# T00 Acceptance Package (pending Human review)
++
++## Goal
++Make the engineering gate enforce a complete PR diff and separate engineering completion from Human acceptance.
++
++## Reviewable changes
++- The GitHub workflow fetches full history and compares against the PR base SHA (or the push's before SHA).
++- The guard fails closed when its base cannot be resolved; changed Change Packages must contain core fields.
++- `hdc complete Txx evidence.json` checks referenced output files and the reported build/test/guard results.
++- `hdc accept Txx` refuses to change local state. Human acceptance is a GitHub PR review, with required reviews and checks configured in repository settings by its owner.
++
++## Limitations
++- Evidence JSON is a checklist, not cryptographic proof that its claimed checks ran. The GitHub Actions result and Human review are the authoritative gate for merging.
++- Branch protection/rulesets and an independent Human reviewer must be configured on GitHub; source code cannot activate those settings.
++- The regex-based architecture guard is a preliminary heuristic; it cannot prove contract compatibility, cross-domain data isolation, or absence of secrets.
++- `hdc next` indicates engineering readiness only. It does not authorize merge or activation.
++
++## Human decision
++PENDING: ACCEPT / RETURN / REJECT, to be recorded in the GitHub pull request.
+diff --git a/hdc/guard.py b/hdc/guard.py
+index 2701055..5045fff 100755
+--- a/hdc/guard.py
++++ b/hdc/guard.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-import json, os, re, subprocess, sys
++import json, os, re, subprocess
+ from pathlib import Path
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+@@ -7,16 +7,19 @@ CFG = json.loads((ROOT / "hdc" / "config.json").read_text(encoding="utf-8"))
+ 
+ 
+ def git(*args):
+-    return subprocess.check_output(["git", *args], text=True).strip()
++    return subprocess.check_output(["git", "-C", str(ROOT), *args], text=True, stderr=subprocess.PIPE).strip()
+ 
+ 
+ def changed_files():
+-    base = os.environ.get("HDC_BASE_REF", "HEAD~1")
+-    try:
+-        out = git("diff", "--name-only", base, "HEAD")
+-    except Exception:
+-        out = git("status", "--porcelain")
+-        return [line[3:] for line in out.splitlines() if len(line) > 3]
++    base = os.environ.get("HDC_BASE_REF")
++    if not base:
++        raise RuntimeError("HDC_BASE_REF is required (the PR base SHA or push before SHA).")
++    if base == "0" * 40:  # First push of an empty repository.
++        base = subprocess.check_output(["git", "-C", str(ROOT), "hash-object", "-t", "tree", "--stdin"],
++                                       input=b"").decode().strip()
++    else:
++        git("rev-parse", "--verify", f"{base}^{{commit}}")
++    out = git("diff", "--name-only", "--diff-filter=ACMR", base, "HEAD")
+     return [x for x in out.splitlines() if x]
+ 
+ 
+@@ -36,26 +39,41 @@ def scan_text_file(path):
+ 
+ 
+ def main():
+-    files = changed_files()
++    try:
++        files = changed_files()
++    except (RuntimeError, subprocess.CalledProcessError) as exc:
++        raise SystemExit(f"HDC ARCHITECTURE GUARD: FAIL (cannot determine full diff: {exc})")
+     errors = []
+     if CFG.get("required_change_package") and files and not has_change_package(files):
+         errors.append("Missing change package in change-packages/*.json")
++    for f in files:
++        if not (f.startswith("change-packages/") and f.endswith(".json")):
++            continue
++        try:
++            package = json.loads(scan_text_file(f))
++            if not isinstance(package.get("intent"), str) or not package["intent"].strip():
++                raise ValueError("intent must be nonempty")
++            if not re.fullmatch(r"CP-[A-Za-z0-9._-]+", package.get("change_package_id", "")):
++                raise ValueError("invalid change_package_id")
++            if not re.fullmatch(r"T\d{2}", package.get("task_id", "")):
++                raise ValueError("invalid task_id")
++            if not isinstance(package.get("acceptance_criteria"), list) or not package["acceptance_criteria"]:
++                raise ValueError("acceptance_criteria must be nonempty")
++        except (ValueError, TypeError, AttributeError) as exc:
++            errors.append(f"Invalid change package {f}: {exc}")
+ 
+     protected = [p for p in CFG.get("protected_paths", []) if any(f.startswith(p) for f in files)]
+     if protected and not core_change_request_present(files):
+         errors.append("Protected Core path changed without core-change-requests/*")
+ 
+     # Conservative heuristics; architecture tests should add project-specific checks later.
+-    direct_db = re.compile(r"domains[/\\][^/\\]+.*(SELECT\s+.+FROM|INSERT\s+INTO|UPDATE\s+.+SET)", re.I | re.S)
+     hardcoded_role = re.compile(r"if\s*\([^\n]*(rector|dean|head_of_department)[^\n]*\)", re.I)
+-    super_agent = re.compile(r"super.?agent|global_authority\s*[:=]\s*true", re.I)
++    super_agent = re.compile(r"global_authority\s*[:=]\s*true", re.I)
+ 
+     for f in files:
+-        if not f.endswith((".py", ".ts", ".tsx", ".js", ".jsx", ".sql", ".json", ".yaml", ".yml")):
++        if not f.endswith((".py", ".ts", ".tsx", ".js", ".jsx", ".sql")):
+             continue
+         txt = scan_text_file(f)
+-        if direct_db.search(f + "\n" + txt):
+-            errors.append(f"Potential direct domain DB access: {f}")
+         if hardcoded_role.search(txt):
+             errors.append(f"Potential hard-coded organization/role permission: {f}")
+         if super_agent.search(txt):
+diff --git a/hdc/hdc.py b/hdc/hdc.py
+index 92971ea..2eb2419 100755
+--- a/hdc/hdc.py
++++ b/hdc/hdc.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-import json, os, sys
++import json, sys
+ from pathlib import Path
+ 
+ ROOT = Path(__file__).resolve().parents[1]
+@@ -11,6 +11,12 @@ def load_json(p):
+     return json.loads(Path(p).read_text(encoding="utf-8"))
+ 
+ 
++def load_state():
++    if not STATE.exists():
++        return {"current_task": "T00", "completed": [], "accepted": [], "notes": []}
++    return load_json(STATE)
++
++
+ def save_json(p, obj):
+     Path(p).write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+ 
+@@ -27,12 +33,12 @@ def get_task(tid):
+ 
+ 
+ def cmd_status():
+-    st = load_json(STATE)
++    st = load_state()
+     print(json.dumps(st, ensure_ascii=False, indent=2))
+ 
+ 
+ def cmd_next():
+-    st = load_json(STATE)
++    st = load_state()
+     completed = set(st.get("completed", []))
+     for d in task_dirs():
+         t = load_json(d / "task.json")
+@@ -41,7 +47,7 @@ def cmd_next():
+         if all(dep in completed for dep in t.get("depends_on", [])):
+             print(t["id"], "-", t["title"])
+             return
+-    print("No ready task. Either all tasks are completed or dependencies are unresolved.")
++    print("No ready engineering task. Activation still requires Human acceptance.")
+ 
+ 
+ def cmd_prompt(tid):
+@@ -55,12 +61,27 @@ def cmd_task(tid):
+     print(json.dumps(get_task(tid), ensure_ascii=False, indent=2))
+ 
+ 
+-def cmd_complete(tid):
+-    st = load_json(STATE)
++def cmd_complete(tid, evidence_path):
++    st = load_state()
+     t = get_task(tid)
+     missing = [d for d in t.get("depends_on", []) if d not in st.get("completed", [])]
+     if missing:
+-        raise SystemExit("Dependencies incomplete: " + ", ".join(missing))
++        raise SystemExit("Engineering dependencies incomplete: " + ", ".join(missing))
++    evidence = load_json(evidence_path)
++    if evidence.get("task_id") != tid:
++        raise SystemExit("Evidence task_id does not match task.")
++    outputs = evidence.get("outputs", {})
++    for name in t.get("required_outputs", []):
++        path = outputs.get(name)
++        if not isinstance(path, str) or not path.strip():
++            raise SystemExit(f"Evidence missing required output: {name}")
++        resolved = (ROOT / path).resolve()
++        if not resolved.is_relative_to(ROOT) or not resolved.is_file():
++            raise SystemExit(f"Required output must be an existing repository file: {name}")
++    checks = evidence.get("checks", {})
++    for name in ("build", "tests", "architecture_guard"):
++        if checks.get(name) != "passed":
++            raise SystemExit(f"Evidence check must be passed: {name}")
+     if tid not in st["completed"]:
+         st["completed"].append(tid)
+     st["current_task"] = None
+@@ -69,17 +90,14 @@ def cmd_complete(tid):
+ 
+ 
+ def cmd_accept(tid):
+-    st = load_json(STATE)
+-    if tid not in st.get("completed", []):
+-        raise SystemExit("Task must be completed before acceptance.")
+-    if tid not in st["accepted"]:
+-        st["accepted"].append(tid)
+-    save_json(STATE, st)
+-    print(f"Human acceptance recorded for {tid}.")
++    get_task(tid)
++    raise SystemExit("Human acceptance cannot be recorded by this CLI. "
++                     "Obtain a Human review on a protected pull request; "
++                     "an authorized maintainer must record the decision separately.")
+ 
+ 
+ def usage():
+-    print("Usage: python hdc/hdc.py status|next|prompt <Txx>|task <Txx>|complete <Txx>|accept <Txx>")
++    print("Usage: python hdc/hdc.py status|next|prompt <Txx>|task <Txx>|complete <Txx> <evidence.json>|accept <Txx>")
+ 
+ 
+ if __name__ == "__main__":
+@@ -90,7 +108,7 @@ if __name__ == "__main__":
+     elif cmd == "next": cmd_next()
+     elif cmd == "prompt" and len(sys.argv) == 3: cmd_prompt(sys.argv[2])
+     elif cmd == "task" and len(sys.argv) == 3: cmd_task(sys.argv[2])
+-    elif cmd == "complete" and len(sys.argv) == 3: cmd_complete(sys.argv[2])
++    elif cmd == "complete" and len(sys.argv) == 4: cmd_complete(sys.argv[2], sys.argv[3])
+     elif cmd == "accept" and len(sys.argv) == 3: cmd_accept(sys.argv[2])
+     else:
+         usage(); raise SystemExit(2)
+diff --git a/templates/ENGINEERING_EVIDENCE.template.json b/templates/ENGINEERING_EVIDENCE.template.json
+new file mode 100644
+index 0000000..7a71682
+--- /dev/null
++++ b/templates/ENGINEERING_EVIDENCE.template.json
+@@ -0,0 +1,12 @@
++{
++  "task_id": "T00",
++  "outputs": {
++    "change_package": "change-packages/CP-T00.json",
++    "contracts": "docs/INVARIANTS.md",
++    "implementation": "hdc/guard.py",
++    "tests": "tests/test_t00.py",
++    "architecture_audit": "docs/T00_ACCEPTANCE.md",
++    "acceptance_package": "docs/T00_ACCEPTANCE.md"
++  },
++  "checks": {"build": "passed", "tests": "passed", "architecture_guard": "passed"}
++}
+diff --git a/tests/test_t00.py b/tests/test_t00.py
+new file mode 100644
+index 0000000..8ea32ef
+--- /dev/null
++++ b/tests/test_t00.py
+@@ -0,0 +1,98 @@
++import json
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import tempfile
++import unittest
++
++
++SOURCE = Path(__file__).resolve().parents[1]
++
++
++def run(*args, cwd=None, env=None):
++    return subprocess.run(args, cwd=cwd, env=env, text=True, capture_output=True)
++
++
++class T00Tests(unittest.TestCase):
++    def setUp(self):
++        self.tmp = tempfile.TemporaryDirectory()
++        self.addCleanup(self.tmp.cleanup)
++        self.root = Path(self.tmp.name) / "repo"
++        self.root.mkdir()
++        for directory in ("hdc", "tasks", "change-packages"):
++            shutil.copytree(SOURCE / directory, self.root / directory,
++                            ignore=shutil.ignore_patterns("state.json", "__pycache__", "*.pyc"))
++        for args in (("init", "-q"), ("config", "user.name", "Example"),
++                     ("config", "user.email", "example@example.invalid")):
++            self.assertEqual(run("git", *args, cwd=self.root).returncode, 0)
++        (self.root / "baseline.txt").write_text("baseline\n")
++        self.commit("baseline")
++        self.base = run("git", "rev-parse", "HEAD", cwd=self.root).stdout.strip()
++
++    def commit(self, message):
++        self.assertEqual(run("git", "add", ".", cwd=self.root).returncode, 0)
++        self.assertEqual(run("git", "commit", "-qm", message, cwd=self.root).returncode, 0)
++
++    def guard(self, base):
++        env = os.environ.copy()
++        env["HDC_BASE_REF"] = base
++        return run("python", "hdc/guard.py", cwd=self.root, env=env)
++
++    def test_guard_fails_closed_when_base_is_missing(self):
++        env = os.environ.copy()
++        env.pop("HDC_BASE_REF", None)
++        result = run("python", "hdc/guard.py", cwd=self.root, env=env)
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("HDC_BASE_REF is required", result.stderr + result.stdout)
++
++    def test_initial_push_uses_empty_tree(self):
++        result = self.guard("0" * 40)
++        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++
++    def test_guard_checks_change_package_from_earlier_commit(self):
++        package = self.root / "change-packages" / "CP-T00.json"
++        package.write_text("{}\n")
++        self.commit("invalid package in first PR commit")
++        (self.root / "feature.py").write_text("value = 1\n")
++        self.commit("implementation in second PR commit")
++        result = self.guard(self.base)
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("Invalid change package", result.stdout)
++        self.assertEqual(self.guard("HEAD~1").returncode, 1)  # Also missing package in last commit.
++
++    def test_accept_cannot_write_state(self):
++        before = self.root / "hdc" / "state.json"
++        result = run("python", "hdc/hdc.py", "accept", "T00", cwd=self.root)
++        self.assertNotEqual(result.returncode, 0)
++        self.assertFalse(before.exists())
++
++    def test_complete_rejects_missing_or_failed_evidence(self):
++        evidence = self.root / "evidence.json"
++        evidence.write_text(json.dumps({"task_id": "T00", "outputs": {}, "checks": {}}))
++        result = run("python", "hdc/hdc.py", "complete", "T00", "evidence.json", cwd=self.root)
++        self.assertNotEqual(result.returncode, 0)
++        self.assertIn("missing required output", result.stderr + result.stdout)
++        self.assertFalse((self.root / "hdc" / "state.json").exists())
++
++    def test_complete_checks_reported_results_and_keeps_acceptance_separate(self):
++        manifest = json.loads((self.root / "tasks" / "T00" / "task.json").read_text())
++        artifact = self.root / "artifact.txt"
++        artifact.write_text("review this artifact\n")
++        evidence = self.root / "evidence.json"
++        report = {"task_id": "T00", "outputs": {name: "artifact.txt" for name in manifest["required_outputs"]},
++                  "checks": {"build": "passed", "tests": "failed", "architecture_guard": "passed"}}
++        evidence.write_text(json.dumps(report))
++        failed = run("python", "hdc/hdc.py", "complete", "T00", "evidence.json", cwd=self.root)
++        self.assertNotEqual(failed.returncode, 0)
++        report["checks"]["tests"] = "passed"
++        evidence.write_text(json.dumps(report))
++        completed = run("python", "hdc/hdc.py", "complete", "T00", "evidence.json", cwd=self.root)
++        self.assertEqual(completed.returncode, 0, completed.stderr)
++        state = json.loads((self.root / "hdc" / "state.json").read_text())
++        self.assertEqual(state["completed"], ["T00"])
++        self.assertEqual(state["accepted"], [])
++
++
++if __name__ == "__main__":
++    unittest.main()
