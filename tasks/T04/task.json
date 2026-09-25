@@ -1,0 +1,29 @@
+{
+  "id": "T04",
+  "title": "Administration Plane & Registries",
+  "depends_on": [
+    "T03"
+  ],
+  "goal": "Xây Administration Plane riêng với Human+AI, Domain/Capability/Semantic/Data/Agent/Integration registries; không coi admin là superuser.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "/admin tách khỏi leadership experience",
+    "Admin roles tách biệt",
+    "Có registry CRUD qua contract",
+    "Admin AI đề xuất thay đổi nhưng không tự tạo institutional authority"
+  ],
+  "status": "NOT_STARTED"
+}

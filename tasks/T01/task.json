@@ -1,0 +1,29 @@
+{
+  "id": "T01",
+  "title": "Experience Shell",
+  "depends_on": [
+    "T00"
+  ],
+  "goal": "Xây khung giao diện AIOS: menu ngang phía trên, vùng workspace lớn, dashboard mặc định, Work, Catalog tile, AI panel, notifications và account/context area.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Login shell render được với dữ liệu giả lập",
+    "Top navigation không dùng side menu lớn",
+    "Catalog dạng tile/card",
+    "UI responsive tối thiểu desktop/mobile"
+  ],
+  "status": "NOT_STARTED"
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIOS Workspace Manifest",
+  "type": "object",
+  "required": ["identity", "active_context", "dashboard", "actions"],
+  "properties": {
+    "identity": {"type": "string"},
+    "active_context": {"type": "object"},
+    "dashboard": {"type": "array"},
+    "actions": {"type": "array"}
+  },
+  "additionalProperties": true
+}

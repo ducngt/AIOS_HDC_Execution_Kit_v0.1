@@ -1,0 +1,27 @@
+{
+  "id": "T00",
+  "title": "Repository Bootstrap & Architecture Guard",
+  "depends_on": [],
+  "goal": "Thiết lập repository theo HDC, protected main, Change Package, CI guard, cấu trúc Core/Domain/Box/Agent và quy tắc không code trực tiếp vào main.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "hdc CLI chạy được",
+    "Architecture Guard chạy trong CI",
+    "Mẫu Change Package hoạt động",
+    "Không có production data trong repo"
+  ],
+  "status": "NOT_STARTED"
+}

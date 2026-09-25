@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIOS Capability/Smart Box Manifest",
+  "type": "object",
+  "required": ["box_id", "capability", "owner", "version", "contract", "lifecycle"],
+  "properties": {
+    "box_id": {"type": "string", "pattern": "^CAP-[A-Z0-9._-]+$"},
+    "version": {"type": "string"},
+    "lifecycle": {"enum": ["DRAFT", "EXPERIMENTAL", "VALIDATED", "ACTIVE", "DEPRECATED", "RETIRED"]}
+  },
+  "additionalProperties": true
+}

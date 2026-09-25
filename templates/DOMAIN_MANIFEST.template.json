@@ -1,0 +1,15 @@
+{
+  "domain_id": "XXX",
+  "name": "",
+  "purpose": "",
+  "owner_role": "",
+  "entities": [],
+  "capabilities": [],
+  "work_types": [],
+  "agents": [],
+  "dashboard_widgets": [],
+  "policies": [],
+  "evidence_types": [],
+  "integrations": [],
+  "lifecycle": "DRAFT"
+}

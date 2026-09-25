@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIOS Domain Manifest",
+  "type": "object",
+  "required": ["domain_id", "name", "purpose", "capabilities", "lifecycle"],
+  "properties": {
+    "domain_id": {"type": "string", "pattern": "^[A-Z][A-Z0-9]{1,7}$"},
+    "name": {"type": "string", "minLength": 1},
+    "purpose": {"type": "string", "minLength": 1},
+    "capabilities": {"type": "array", "items": {"type": "string"}},
+    "lifecycle": {"enum": ["DRAFT", "EXPERIMENTAL", "ACTIVE", "SUSPENDED", "RETIRED"]}
+  },
+  "additionalProperties": true
+}

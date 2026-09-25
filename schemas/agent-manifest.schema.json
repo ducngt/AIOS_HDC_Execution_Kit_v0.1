@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIOS Agent Manifest",
+  "type": "object",
+  "required": ["agent_id", "purpose", "owner", "capabilities", "allowed_actions", "forbidden_actions", "lifecycle"],
+  "properties": {
+    "agent_id": {"type": "string", "pattern": "^AG-[A-Z0-9._-]+$"},
+    "capabilities": {"type": "array"},
+    "allowed_actions": {"type": "array"},
+    "forbidden_actions": {"type": "array"}
+  },
+  "additionalProperties": true
+}

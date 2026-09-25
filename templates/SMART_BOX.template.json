@@ -1,0 +1,18 @@
+{
+  "box_id": "CAP-XXXX",
+  "capability": "",
+  "owner": "",
+  "version": "0.1.0",
+  "contract": {
+    "inputs": [],
+    "outputs": [],
+    "errors": [],
+    "constraints": [],
+    "permissions": []
+  },
+  "knowledge_refs": [],
+  "rules": [],
+  "implementation": {"type": "UNSPECIFIED", "location": ""},
+  "observability": [],
+  "lifecycle": "EXPERIMENTAL"
+}

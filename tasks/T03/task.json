@@ -1,0 +1,29 @@
+{
+  "id": "T03",
+  "title": "Dynamic Workspace, Dashboard & Catalog",
+  "depends_on": [
+    "T02"
+  ],
+  "goal": "Xây Workspace Composer, dashboard theo công việc thuộc thẩm quyền, widget contract, catalog động theo role/context/authority.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Workspace sinh từ manifest",
+    "Dashboard ưu tiên work/progress/risk/decision trong authority scope",
+    "Hai PHT có portfolio khác nhau cho dashboard khác nhau",
+    "Tile domain tự sinh từ registry"
+  ],
+  "status": "NOT_STARTED"
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIOS HDC Change Package",
+  "type": "object",
+  "required": ["change_package_id", "task_id", "intent", "acceptance_criteria"],
+  "properties": {
+    "change_package_id": {"type": "string", "pattern": "^CP-[A-Za-z0-9._-]+$"},
+    "task_id": {"type": "string", "pattern": "^T[0-9]{2}$"},
+    "intent": {"type": "string", "minLength": 1},
+    "acceptance_criteria": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

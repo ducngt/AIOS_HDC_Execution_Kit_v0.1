@@ -1,0 +1,19 @@
+{
+  "agent_id": "AG-XXXX",
+  "purpose": "",
+  "owner": "",
+  "beneficiary": "",
+  "domain": "",
+  "capabilities": [],
+  "data_scope": [],
+  "knowledge_scope": [],
+  "allowed_actions": [],
+  "forbidden_actions": [],
+  "authority": [],
+  "delegation": [],
+  "risk_class": "",
+  "human_supervisor": "",
+  "escalation": "",
+  "models": [],
+  "lifecycle": "DRAFT"
+}

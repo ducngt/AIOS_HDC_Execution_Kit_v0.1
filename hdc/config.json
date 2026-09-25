@@ -1,0 +1,20 @@
+{
+  "project": "AIOS",
+  "version": "0.1",
+  "protected_paths": [
+    "core/identity/",
+    "core/organization/",
+    "core/semantic/",
+    "core/authority/",
+    "core/delegation/",
+    "core/signature/",
+    "schemas/core/"
+  ],
+  "forbidden_patterns": [
+    "DIRECT_DB_CROSS_DOMAIN",
+    "SUPER_AGENT_GLOBAL_AUTHORITY",
+    "HARDCODED_ORG_PERMISSION"
+  ],
+  "required_change_package": true,
+  "main_branch": "main"
+}

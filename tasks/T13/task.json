@@ -1,0 +1,30 @@
+{
+  "id": "T13",
+  "title": "Remaining Domain Intelligence Systems",
+  "depends_on": [
+    "T11",
+    "T12"
+  ],
+  "goal": "Triển khai TIS, SIS, PIS, FIS, OIS, EIS, QIS, DIS bằng Domain Factory; ưu tiên vertical slice nhỏ cho từng domain và tái sử dụng shared capabilities.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Mỗi domain có manifest",
+    "Không domain silo core entities",
+    "Mỗi domain có ít nhất một end-to-end slice",
+    "Cross-domain contracts versioned"
+  ],
+  "status": "NOT_STARTED"
+}

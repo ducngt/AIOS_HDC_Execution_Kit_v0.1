@@ -1,0 +1,29 @@
+{
+  "id": "T11",
+  "title": "RIS Vertical Slice",
+  "depends_on": [
+    "T10"
+  ],
+  "goal": "Triển khai RIS theo vertical slice bắt đầu Research Project, đi xuyên Data->Work->AI->Approval->Evidence->Dashboard; sau đó mở rộng publication/IP/discovery theo cùng pattern.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Research Project chạy end-to-end",
+    "PI/manager dashboards khác nhau",
+    "Có evidence/provenance",
+    "RIS không truy cập trực tiếp DB domain khác"
+  ],
+  "status": "NOT_STARTED"
+}

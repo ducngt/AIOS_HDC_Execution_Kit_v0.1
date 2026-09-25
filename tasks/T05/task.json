@@ -1,0 +1,30 @@
+{
+  "id": "T05",
+  "title": "Organization-as-Data & Foundation Data Import",
+  "depends_on": [
+    "T04"
+  ],
+  "goal": "Xây Organization Graph, Person/Asset/Policy foundation models và reusable import capability với staging, mapping, validation, conflict preview và Human review.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Phòng ban là dữ liệu có lifecycle",
+    "Không tạo module code theo tên phòng ban",
+    "Import hỗ trợ ít nhất CSV/XLSX/JSON",
+    "Raw artifact/provenance được giữ",
+    "Không commit authoritative data nếu thiếu Source Authority"
+  ],
+  "status": "NOT_STARTED"
+}

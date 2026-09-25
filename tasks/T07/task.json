@@ -1,0 +1,29 @@
+{
+  "id": "T07",
+  "title": "Work 6R+ERO, Authority/Delegation, Decision, Evidence & Signature Box",
+  "depends_on": [
+    "T06"
+  ],
+  "goal": "Xây Work Contract 6R+ERO, authority/delegation box, decision records, evidence fabric và CAP-SIGNATURE độc lập CAP-AUTHORITY.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Signature != Authority được enforce",
+    "Work có owner/responsibility/authority/evidence/risk/outcome",
+    "Delegation có scope+time+revocation",
+    "Decision consequential có provenance"
+  ],
+  "status": "NOT_STARTED"
+}

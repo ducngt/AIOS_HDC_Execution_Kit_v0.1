@@ -1,0 +1,30 @@
+{
+  "id": "T09",
+  "title": "AI Services, Capability Discovery & Multi-Agent Runtime",
+  "depends_on": [
+    "T08"
+  ],
+  "goal": "Xây model gateway abstraction, capability discovery, tool contracts, Agent manifests, multi-agent runtime và handover; không Super Agent.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Agent có Identity/Purpose/Owner/Scope",
+    "Tool call qua capability contract",
+    "Không standing global privilege",
+    "Model có thể thay thế",
+    "Failure có stop/handover"
+  ],
+  "status": "NOT_STARTED"
+}

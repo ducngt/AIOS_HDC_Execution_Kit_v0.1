@@ -1,0 +1,29 @@
+{
+  "id": "T02",
+  "title": "Identity, Login, Multi-role Context & Context-bound Authority",
+  "depends_on": [
+    "T01"
+  ],
+  "goal": "Xây Identity Core, login, role assignment theo thời gian, management-priority default context, role switching và authority evaluation tách khỏi UI visibility.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Một Identity có nhiều role assignment",
+    "Management role mở dashboard mặc định",
+    "Role switch không cộng dồn authority",
+    "Action permission kiểm tra lại ở backend/control layer"
+  ],
+  "status": "NOT_STARTED"
+}

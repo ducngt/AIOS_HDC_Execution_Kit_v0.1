@@ -1,0 +1,29 @@
+{
+  "id": "T12",
+  "title": "LIS Vertical Slice",
+  "depends_on": [
+    "T10"
+  ],
+  "goal": "Triển khai LIS theo vertical slice chương trình/học phần/CĐR và dashboard academic authority; sau đó mở rộng assessment/living curriculum/learning resources.",
+  "human_gates": [
+    "G1_INTENT",
+    "G2_MEANING_AUTHORITY",
+    "G3_EXPERIENCE",
+    "G4_ACCEPTANCE"
+  ],
+  "required_outputs": [
+    "change_package",
+    "contracts",
+    "implementation",
+    "tests",
+    "architecture_audit",
+    "acceptance_package"
+  ],
+  "acceptance_criteria": [
+    "Programme/course objects versioned",
+    "Academic authority tách AI recommendation",
+    "Dashboard theo scope",
+    "LIS reuse shared work/evidence/signature"
+  ],
+  "status": "NOT_STARTED"
+}

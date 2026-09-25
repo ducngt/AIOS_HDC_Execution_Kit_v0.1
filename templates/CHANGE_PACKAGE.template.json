@@ -1,0 +1,20 @@
+{
+  "change_package_id": "CP-XXXX",
+  "task_id": "TXX",
+  "intent": "",
+  "requested_by": "human",
+  "capabilities_reused": [],
+  "capabilities_new": [],
+  "contract_changes": [],
+  "semantic_impact": [],
+  "data_impact": [],
+  "authority_impact": [],
+  "ui_impact": [],
+  "dependencies": [],
+  "security_privacy_impact": [],
+  "migration": {"required": false, "plan": ""},
+  "rollback": {"available": true, "plan": ""},
+  "tests_required": [],
+  "acceptance_criteria": [],
+  "human_gate": "PENDING"
+}
